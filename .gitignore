@@ -1,0 +1,5 @@
+#Clases compiladas
+*.class
+
+#Config del visual studio
+.vsconfig

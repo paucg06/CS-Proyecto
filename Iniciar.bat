@@ -2,7 +2,7 @@
 title CS PROYECTO
 
 echo Compilando...
-javac src\code\Main.java
+javac src\code\*.java src\code\cypher\*java
 
 if errorlevel 1 (
     echo.
@@ -15,7 +15,7 @@ echo.
 echo Ejecutando programa...
 echo.
 
-java -cp src Main
+java -cp src\code Main
 
 echo.
 pause
