@@ -2,7 +2,7 @@
 title CS PROYECTO
 
 echo Compilando...
-javac src\Main.java
+javac src\code\Main.java
 
 if errorlevel 1 (
     echo.
