@@ -13,6 +13,7 @@ public class AES
         System.out.println("\n¡Hola, soy AES.\n");
     }
 
+    //Recibe img en claro y key en claro
     public static String Encode(byte[] img, String key) throws Exception //Devuelve la imagen cifrada con AES en base64
     {
         String result;
@@ -33,9 +34,24 @@ public class AES
         return result;
     }
 
-    public static byte[] Decode(String encImg, String key) throws Exception
+    //Recibe encImg64 codificada y en base64 y key en claro
+    public static byte[] Decode(String encImg64, String key) throws Exception //Devuelve la imagen descifrada por la key en array de bytes
     {
-        byte[] result = new byte[0];
+        byte[] result;
+        //Transformar la clave recibida
+        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+        SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
+
+        //Configurar el cipher con la clave
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+
+        //Recuperar de base64
+        byte[] encImg = Base64.getDecoder().decode(encImg64);
+
+        //Desencriptar imagen
+        result = cipher.doFinal(encImg);
+
         return result;
     }
 }
