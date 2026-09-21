@@ -38,5 +38,4 @@ public class AES
         byte[] result = new byte[0];
         return result;
     }
-
 }
