@@ -1,16 +1,13 @@
-import java.util.Random;
+import java.security.SecureRandom;
 
 
 public class RandKeyGenerator
 {
-    private static String GenKey(int bits) //16 para el AES
+    private static byte[] GenKey(int bytes) //16 para el AES
     {
-        Random rnd = new Random();
-        String result = "";
-        for(int i = 0; i < bits; i++)
-        {
-            result += Integer.toString(rnd.nextInt(9));
-        }
+        SecureRandom random = new SecureRandom();
+        byte[] result = new byte[bytes];
+        random.nextBytes(result);
         return result;
     }
 }

@@ -14,44 +14,54 @@ public class AES
     }
 
     //Recibe img en claro y key en claro
-    public static String Encode(byte[] img, String key) throws Exception //Devuelve la imagen cifrada con AES en base64
+    public static String Encode(byte[] img, byte[] key) //Devuelve la imagen cifrada con AES en base64
     {
-        String result;
-        //Transformar la clave recibida
-        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
-        SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
+        try
+        {
+            String result;
+            //Transformar la clave recibida
+            SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
 
-        //Configurar el cipher con la clave
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            //Configurar el cipher con la clave
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
-        //Encriptar imagen
-        byte[] encImg = cipher.doFinal(img);
+            //Encriptar imagen
+            byte[] encImg = cipher.doFinal(img);
 
-        //Pasar a base64
-        result = Base64.getEncoder().encodeToString(encImg);
+            //Pasar a base64
+            result = Base64.getEncoder().encodeToString(encImg);
 
-        return result;
+            return result;
+        } catch (Exception e)
+        {
+            throw new IllegalStateException("Error inesperado en el cifrado AES", e);
+        }   
     }
 
     //Recibe encImg64 codificada y en base64 y key en claro
-    public static byte[] Decode(String encImg64, String key) throws Exception //Devuelve la imagen descifrada por la key en array de bytes
+    public static byte[] Decode(String encImg64, byte[] key)//Devuelve la imagen descifrada por la key en array de bytes
     {
-        byte[] result;
-        //Transformar la clave recibida
-        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
-        SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
+        try
+        {
+            byte[] result;
+            //Transformar la clave recibida
+            SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
 
-        //Configurar el cipher con la clave
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+            //Configurar el cipher con la clave
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
 
-        //Recuperar de base64
-        byte[] encImg = Base64.getDecoder().decode(encImg64);
+            //Recuperar de base64
+            byte[] encImg = Base64.getDecoder().decode(encImg64);
 
-        //Desencriptar imagen
-        result = cipher.doFinal(encImg);
+            //Desencriptar imagen
+            result = cipher.doFinal(encImg);
 
-        return result;
+            return result;
+        } catch
+        {
+            throw new IllegalStateException("Error inesperado en el descifrado AES", e);
+        }
     }
 }
