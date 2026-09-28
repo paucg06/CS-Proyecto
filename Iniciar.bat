@@ -15,7 +15,4 @@ echo.
 echo Ejecutando programa...
 echo.
 
-java -cp src\code Main
-
-echo.
-pause
+start "" javaw -cp src\code Main

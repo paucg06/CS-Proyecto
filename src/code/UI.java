@@ -14,47 +14,70 @@ public class UI
     {
         //Ventana
         JFrame ventana = new JFrame("Servicio seguro de contenidos multimedia");
-        ventana.setSize(600, 400);
+        ventana.setSize(700, 400);
         ventana.setLocationRelativeTo(null); //Centrar en pantalla
-        ventana.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); //Cierra solo la ventana, no el programa
+        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Al cerrar la ventana termina el programa
 
         //Titulo (parte de arriba)
-        JLabel titulo = new JLabel("Archivos disponibles", SwingConstants.CENTER);
+        JLabel titulo = new JLabel("Servicio seguro de contenidos multimedia", SwingConstants.CENTER);
 
-        //Lista de archivos (centro)
-        DefaultListModel<String> modeloLista = new DefaultListModel<>(); //Aqui se guardan los textos de la lista
-        JList<String> lista = new JList<>(modeloLista);
-        JScrollPane scroll = new JScrollPane(lista); //Barra de desplazamiento
+        //Zona de texto (centro): aqui se muestran los resultados, sustituye a la consola
+        JTextArea zonaTexto = new JTextArea();
+        zonaTexto.setEditable(false); //El usuario no puede escribir en ella
+        JScrollPane scroll = new JScrollPane(zonaTexto);
 
-        //Boton (parte de abajo)
+        //Botones (las mismas opciones del menu anterior)
         JButton botonActualizar = new JButton("Actualizar");
-        botonActualizar.addActionListener(e -> actualizarLista(modeloLista)); //Al pulsar, recarga la lista
+        JButton botonMostrar = new JButton("Mostrar Archivos");
+        JButton botonAes = new JButton("AES");
+        JButton botonDb = new JButton("DB");
+        JButton botonSalir = new JButton("Salir");
 
-        JPanel panelBotones = new JPanel();
+        //Que hace cada boton al pulsarlo
+        botonActualizar.addActionListener(e -> opcionActualizar(zonaTexto));
+        botonMostrar.addActionListener(e -> opcionMostrarArchivos(zonaTexto));
+        botonAes.addActionListener(e -> zonaTexto.setText("¡Hola, soy AES."));
+        botonDb.addActionListener(e -> zonaTexto.setText("¡Hola, soy DbManager."));
+        botonSalir.addActionListener(e -> System.exit(0));
+
+        //Panel con los botones uno debajo de otro (izquierda)
+        JPanel panelBotones = new JPanel(new GridLayout(0, 1, 5, 5)); //Cualquier numero de filas, 1 columna
+        panelBotones.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); //Margen alrededor
         panelBotones.add(botonActualizar);
+        panelBotones.add(botonMostrar);
+        panelBotones.add(botonAes);
+        panelBotones.add(botonDb);
+        panelBotones.add(botonSalir);
 
         //Colocar todo en la ventana
         ventana.setLayout(new BorderLayout());
         ventana.add(titulo, BorderLayout.NORTH);
+        ventana.add(panelBotones, BorderLayout.WEST);
         ventana.add(scroll, BorderLayout.CENTER);
-        ventana.add(panelBotones, BorderLayout.SOUTH);
 
-        actualizarLista(modeloLista); //Cargar la lista nada mas abrir
         ventana.setVisible(true);
     }
 
-    //Vuelve a leer los archivos y rellena la lista
-    private void actualizarLista(DefaultListModel<String> modeloLista)
+    //Opcion 1: vuelve a leer los archivos de la carpeta
+    private void opcionActualizar(JTextArea zonaTexto)
     {
         Main.cargarArchivos(); //Reutilizamos el metodo de Main
-        modeloLista.clear();
+        zonaTexto.setText("Archivos actualizados: " + Main.matrizArchivos.length);
+    }
+
+    //Opcion 2: actualiza y muestra el nombre y tamanyo de cada archivo
+    private void opcionMostrarArchivos(JTextArea zonaTexto)
+    {
+        Main.cargarArchivos();
+        zonaTexto.setText(""); //Borrar lo que hubiera
 
         for (int i = 0; i < Main.matrizArchivos.length; i++)
         {
             String nombre = (String) Main.matrizArchivos[i][0];
             byte[] contenido = (byte[]) Main.matrizArchivos[i][1];
 
-            modeloLista.addElement(nombre + " (" + contenido.length + " bytes)");
+            zonaTexto.append(nombre + "\n");
+            zonaTexto.append(contenido.length + " bytes\n");
         }
     }
 }
