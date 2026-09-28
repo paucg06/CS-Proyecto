@@ -61,9 +61,8 @@ public class Main
                     db.HelloDbManager();
                     break;
                 case 6:
-                    ui.HelloUI();
+                    ui.AbrirVentana();
                     break;
-
                 case 0:
                     System.out.println("\nSaliendo...");
                     break;
