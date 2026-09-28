@@ -22,7 +22,7 @@ public class AES
             String result;
             //Crear specs con la clave e iv
             SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
-            IvParameterSpec ivSpec = new IvParameterSpec(iv.getBytes("UTF-8"));
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
 
             //Configurar el cipher con la clave y el iv
             Cipher cipher = Cipher.getInstance("AES/CTR/PKCS5Padding");
@@ -49,7 +49,7 @@ public class AES
             byte[] result;
             //Crear specs con la clave e iv
             SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
-            IvParameterSpec ivSpec = new IvParameterSpec(iv.getBytes("UTF-8"));
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
 
             //Configurar el cipher con la clave
             Cipher cipher = Cipher.getInstance("AES/CTR/PKCS5Padding");
