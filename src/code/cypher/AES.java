@@ -3,7 +3,7 @@ package cypher; //Declarar paquete
 //Librerias
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.GCMParameterSpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -22,10 +22,10 @@ public class AES
             String result;
             //Crear specs con la clave e iv
             SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
-            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+            GCMParameterSpec ivSpec = new GCMParameterSpec(128, iv);
 
             //Configurar el cipher con la clave y el iv
-            Cipher cipher = Cipher.getInstance("AES/CTR/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
 
             //Encriptar imagen
@@ -49,10 +49,10 @@ public class AES
             byte[] result;
             //Crear specs con la clave e iv
             SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
-            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+            GCMParameterSpec ivSpec = new GCMParameterSpec(128, iv);
 
             //Configurar el cipher con la clave
-            Cipher cipher = Cipher.getInstance("AES/CTR/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
 
             //Recuperar de base64
