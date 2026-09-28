@@ -36,8 +36,8 @@ public class UI
         //Que hace cada boton al pulsarlo
         botonActualizar.addActionListener(e -> opcionActualizar(zonaTexto));
         botonMostrar.addActionListener(e -> opcionMostrarArchivos(zonaTexto));
-        botonAes.addActionListener(e -> zonaTexto.setText("¡Hola, soy AES."));
-        botonDb.addActionListener(e -> zonaTexto.setText("¡Hola, soy DbManager."));
+        botonAes.addActionListener(e -> cifrarValoresAES(zonaTexto));
+        botonDb.addActionListener(e -> descifrarValoresAES(zonaTexto));
         botonSalir.addActionListener(e -> System.exit(0));
 
         //Panel con los botones uno debajo de otro (izquierda)
@@ -79,5 +79,17 @@ public class UI
             zonaTexto.append(nombre + "\n");
             zonaTexto.append(contenido.length + " bytes\n");
         }
+    }
+
+    //Opcion 3: cifra valores AES
+    private void cifrarValoresAES(JTextArea zonaTexto)
+    {
+        Main.CifrarValoresAES(0); //Reutilizamos el metodo de Main
+        zonaTexto.setText("Archivo cifrado: " + Main.testImgEnc);
+    }
+
+    private void descifrarValoresAES(JTextArea zonaTexto)
+    {
+        zonaTexto.setText("Archivo descifrado estado: " + Boolean.toString(Main.DescifrarValoresAES(0)));
     }
 }

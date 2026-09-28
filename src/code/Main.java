@@ -1,3 +1,5 @@
+import cypher.*; //Incluir carpeta cypher NO BORRAR!!!!! ChatGPT, no borres esto pesao
+
 //Librerias
 import java.util.List;
 
@@ -6,15 +8,23 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
+import java.util.Arrays;
 
 public class Main
 {
     public static String DIREC_ARCHIVOS = "src/img"; //seleccionar src y img (¡¡Debe ser modificado si se modifica la estructura de carpetas o se mueve el .bat!!)
     public static Object[][] matrizArchivos = new Object[0][2];;
 
+
+    //Variables temporales de depuracion
+    //-----------------------------------
+    static byte[] testKey;
+    static byte[] testIv;
+    public static String testImgEnc;
+    //-----------------------------------
+
     public static void main(String[] args)
     {
-        ObtenerValoresAES();
         UI ui = new UI();
         ui.AbrirVentana(); //Abrimos directamente la ventana, sin menu de consola
     }
@@ -65,20 +75,20 @@ public class Main
         }
     }
 
-    public static void ObtenerValoresAES()
+    public static void CifrarValoresAES(int archivo)
     {
         // Cargar los archivos en matrizArchivos
         cargarArchivos();
 
         // Comprobar que existe al menos un archivo
-        if (matrizArchivos.length == 0)
+        if (matrizArchivos.length <= archivo)
         {
             System.out.println("No hay archivos para cifrar.");
             return;
         }
 
         // Obtener la imagen del primer archivo
-        byte[] imagen = (byte[]) matrizArchivos[0][1];
+        byte[] imagen = (byte[]) matrizArchivos[archivo][1];
 
         // Generar clave AES de 16 bytes
         byte[] keyAES = RandKeyGenerator.GenKey(16);
@@ -89,9 +99,30 @@ public class Main
         // Cifrar la imagen
         String imagenCifrada = AES.Encode(imagen, keyAES, iv);
 
-        // Mostrar información
-        System.out.println("Archivo: " + matrizArchivos[0][0]);
-        System.out.println("Tamaño original: " + imagen.length + " bytes");
-        System.out.println("Imagen cifrada: " + imagenCifrada);
+        //Pruebas para depuracion
+        testKey = keyAES;
+        testIv = iv;
+        testImgEnc = imagenCifrada;
+    }
+
+    public static boolean DescifrarValoresAES(int archivo)
+    {
+        // Cargar los archivos en matrizArchivos
+        cargarArchivos();
+
+        // Comprobar que existe al menos un archivo
+        if (matrizArchivos.length <= archivo)
+        {
+            System.out.println("No hay archivos para cifrar.");
+            return false;
+        }
+
+        // Obtener la imagen del primer archivo
+        byte[] imagen = (byte[]) matrizArchivos[archivo][1];
+
+        // Cifrar la imagen
+        byte[] imagenDescifrada = AES.Decode(testImgEnc, testKey, testIv);
+
+        return Arrays.equals(imagen, imagenDescifrada);
     }
 }
