@@ -14,6 +14,7 @@ public class Main
 
     public static void main(String[] args)
     {
+        ObtenerValoresAES();
         UI ui = new UI();
         ui.AbrirVentana(); //Abrimos directamente la ventana, sin menu de consola
     }
@@ -52,7 +53,7 @@ public class Main
         }
     }
     
-    public static void mostrarArchivos()
+    public static void MostrarArchivos()
     {
         for (int i = 0; i < matrizArchivos.length; i++)
         {
@@ -62,5 +63,35 @@ public class Main
             System.out.println(nombre);
             System.out.println(contenido.length + " bytes");
         }
+    }
+
+    public static void ObtenerValoresAES()
+    {
+        // Cargar los archivos en matrizArchivos
+        cargarArchivos();
+
+        // Comprobar que existe al menos un archivo
+        if (matrizArchivos.length == 0)
+        {
+            System.out.println("No hay archivos para cifrar.");
+            return;
+        }
+
+        // Obtener la imagen del primer archivo
+        byte[] imagen = (byte[]) matrizArchivos[0][1];
+
+        // Generar clave AES de 16 bytes
+        byte[] keyAES = RandKeyGenerator.GenKey(16);
+
+        // Generar IV de 12 bytes
+        byte[] iv = RandKeyGenerator.GenKey(12);
+
+        // Cifrar la imagen
+        String imagenCifrada = AES.Encode(imagen, keyAES, iv);
+
+        // Mostrar información
+        System.out.println("Archivo: " + matrizArchivos[0][0]);
+        System.out.println("Tamaño original: " + imagen.length + " bytes");
+        System.out.println("Imagen cifrada: " + imagenCifrada);
     }
 }

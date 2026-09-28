@@ -1,6 +1,5 @@
 import java.security.SecureRandom;
 
-
 public class RandKeyGenerator
 {
     public static byte[] GenKey(int bytes) //16 para el AES
