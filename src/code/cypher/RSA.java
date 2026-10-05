@@ -1,45 +1,32 @@
-package cypher; //Declarar paquete
+package cypher;
 
-//Librerias
 import javax.crypto.Cipher;
-import java.util.Base64;
-import java.security.KeyPair; //para la creación de las claves públicas y privadas 
-import java.security.KeyPairGenerator; //para crear pares de claves privadas y publicas 
-import java.security.PrivateKey; 
-import java.security.PublicKey; 
-import java.security.SecureRandom; 
-import java.util.Base64; 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
+public class RSA {
 
-
-
-
-public class RSA
-{
-    public static void main(String[] args){
-
-        try{
-            //generamos las claves públicas y privadas 
-            //se crea el generador de claves para el algoritmo RSA
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA"); 
-            keyGen.initialize(2048); //inicializamos el tamaño de la clave en 2048 bits 
-
-            KeyPair parDeClaves = keyGen.generateKeyPair(); 
-            PublicKey clavePublica = parDeClaves.getPublic(); 
-            PrivateKey clavePrivada = parDeClaves.getPrivate(); 
-
-            System.out.println("Prueba de la generación d elas claves"); 
-            System.out.println("Formato de la clave pública:"+ clavePublica.getFormat());
-
-            String fragmentoClave = Base64.getEncoder().encodeToString(clavePublica.getEncoded()); 
-            System.out.println("Fragmento de la clave pública: " + fragmentoClave.substring(0, 30) + "...");
-
-            String fragmentoClavePriv = Base64.getEncoder().encodeToString(clavePrivada.getEncoded()); 
-            System.out.println("Fragmento de la clave privada: " + fragmentoClavePriv.substring(0, 30) + "...");
-
-        }catch(Exception e){
-            System.err.println("No se ha podido generar la clave"); 
+    //genera y devuelve el par de claves RSA
+    public static KeyPair GenerarParDeClaves() {
+        try {
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+            keyGen.initialize(2048);
+            return keyGen.generateKeyPair();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al generar claves RSA", e);
         }
+    }
 
+    //recibe las claves aes y las cifra 
+    public static byte[] CifrarClaveAES(byte[] claveAES, PublicKey clavePublica) {
+        try {
+            Cipher rsaCipher = Cipher.getInstance("RSA");
+            rsaCipher.init(Cipher.ENCRYPT_MODE, clavePublica);
+            return rsaCipher.doFinal(claveAES);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al cifrar la clave AES con RSA", e);
+        }
     }
 }

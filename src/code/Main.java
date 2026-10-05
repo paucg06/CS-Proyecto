@@ -99,6 +99,13 @@ public class Main
         // Cifrar la imagen
         String imagenCifrada = AES.Encode(imagen, keyAES, iv);
 
+        //PARTE RSA (tengo que probabrlo ns si esta bien :D)
+        java.security.KeyPair parClavesUsuario = RSA.GenerarParDeClaves();
+
+        byte[] claveAesCifrada = RSA.CifrarClaveAES(keyAES, parClavesUsuario.getPublic());
+
+        System.out.println("La clave AES se ha cifrado con RSA. Tamaño: " + claveAesCifrada.length + " bytes.");
+
         //Pruebas para depuracion
         testKey = keyAES;
         testIv = iv;
