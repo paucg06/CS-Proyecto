@@ -4,8 +4,8 @@ import java.security.NoSuchAlgorithmException;
 
 public class PasswordManager
 {
-    public byte[] CodePass(String password, byte[] salt) //Aplica hash+salt a la contrasenya
-    {        
+    public static byte[] CodePass(String password, byte[] salt) //Aplica hash+salt a la contrasenya
+    {
         try
         {
             //Preparo la funcion sha3-256

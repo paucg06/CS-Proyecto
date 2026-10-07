@@ -15,11 +15,11 @@ public class AES
     }
 
     //Recibe img en claro y key en claro
-    public static String Encode(byte[] img, byte[] key, byte[] iv) //Devuelve la imagen cifrada con AES en base64
+    public static byte[] Encode(byte[] archivo, byte[] key, byte[] iv) //Devuelve la imagen cifrada con AES
     {
         try
         {
-            String result;
+            byte[] result;
             //Crear specs con la clave e iv
             SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
             GCMParameterSpec ivSpec = new GCMParameterSpec(128, iv);
@@ -29,10 +29,7 @@ public class AES
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
 
             //Encriptar imagen
-            byte[] encImg = cipher.doFinal(img);
-
-            //Pasar a base64
-            result = Base64.getEncoder().encodeToString(encImg);
+            result = cipher.doFinal(archivo);
 
             return result;
         } catch (Exception e)
@@ -42,7 +39,7 @@ public class AES
     }
 
     //Recibe encImg64 codificada y en base64 y key en claro
-    public static byte[] Decode(String encImg64, byte[] key, byte[] iv)//Devuelve la imagen descifrada por la key en array de bytes
+    public static byte[] Decode(byte[] encArchivo, byte[] key, byte[] iv)//Devuelve la imagen descifrada por la key en array de bytes
     {
         try
         {
@@ -55,11 +52,8 @@ public class AES
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
 
-            //Recuperar de base64
-            byte[] encImg = Base64.getDecoder().decode(encImg64);
-
             //Desencriptar imagen
-            result = cipher.doFinal(encImg);
+            result = cipher.doFinal(encArchivo);
 
             return result;
         } catch (Exception e)
