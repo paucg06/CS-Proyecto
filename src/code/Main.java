@@ -25,6 +25,7 @@ public class Main
 
     private static PrivateKey clavePrivadaActiva;
     private static PublicKey clavePublicaActiva;
+    private static String usuarioActivo;
 
 
     //Variables temporales de depuracion
@@ -152,7 +153,7 @@ public class Main
     //Funciones definitivas de cifrado y descifrado--------------------------------------------------------------------
 
     //Cifra el archivo y lo guarda en la db
-    public void CifrarArchivo(byte[] archivo, PublicKey publicKey) //Recibe el archivo a cifrar y la clave publica del usuario que lo cifra
+    public void CifrarArchivo(byte[] archivo, PublicKey publicKey, String nombreArchivo) //Recibe el archivo a cifrar y la clave publica del usuario que lo cifra
     {
         String[] dataline = new String[3];
         //CifradoAES
@@ -164,18 +165,22 @@ public class Main
         //CifradoRSA
         byte[] keyAesCifrada = RSA.Encode(keyAES, publicKey);
 
-        dataline[0] = Base64.getEncoder().encodeToString(archivoCifrado);
-        dataline[1] = Base64.getEncoder().encodeToString(iv);
-        dataline[2] = Base64.getEncoder().encodeToString(keyAesCifrada);
+        dataline[0] = nombreArchivo;
+        dataline[1] = Base64.getEncoder().encodeToString(archivoCifrado);
+        dataline[2] = Base64.getEncoder().encodeToString(iv);
+        dataline[3] = Base64.getEncoder().encodeToString(keyAesCifrada);
+        dataline[4] = usuarioActivo;
         //Dataline es la informacion que se guarda en la db
+        DbManager.GuardarArchivo(dataline);
     }
 
-    public byte[] DescifrarArcchivo(String[] dataline, PrivateKey privateKey)
+    public byte[] DescifrarArcchivo(String nombreArchivo, PrivateKey privateKey)
     {
+        String[] dataline = DbManager.ObtenerArchivo(nombreArchivo);
         //Recupera la informacion para descodificar
-        byte[] archivoCifrado = Base64.getDecoder().decode(dataline[0]);
-        byte[] iv = Base64.getDecoder().decode(dataline[1]);
-        byte[] keyAESenc = Base64.getDecoder().decode(dataline[2]);
+        byte[] archivoCifrado = Base64.getDecoder().decode(dataline[1]);
+        byte[] iv = Base64.getDecoder().decode(dataline[2]);
+        byte[] keyAESenc = Base64.getDecoder().decode(dataline[3]);
 
         //Descifrado RSA
         byte[] keyAES = RSA.Decode(keyAESenc, privateKey);
@@ -207,15 +212,16 @@ public class Main
         dataline[4] = Base64.getEncoder().encodeToString(iv); //iv para cifrado en claro
         //Dataline es la informacion que se guarda en la db
 
-        user = dataline;
+        DbManager.GuardarUsuario(dataline);
     }
 
     public void Login(String userName, String password)
     {
-        String dataline[] = user;//Esta variable se obtendra directamente de la base de datos utilizando userName.
+        String dataline[] = DbManager.ObtenerUsuario(userName);//Esta variable se obtendra directamente de la base de datos utilizando userName.
         
+        usuarioActivo = userName;//Guarda en la variable de clase
         //Recuperar datos de la db
-        clavePublicaActiva = Base64.getDecoder().decode(dataline[1]); //Guardar en la variable de clase
+        byte[] publicKey = Base64.getDecoder().decode(dataline[1]); //Clave publica por recuperar
         byte[] privateKeyEnc = Base64.getDecoder().decode(dataline[2]); //Clave privada que descifrar
         byte[] salt = Base64.getDecoder().decode(dataline[3]); //Salt para hashear la contrasenya
         byte[] iv = Base64.getDecoder().decode(dataline[4]); //IV para decofificar la clave privada
@@ -226,9 +232,21 @@ public class Main
         //Descifrar la clave privaeda
         byte[] privateKey = AES.Decode(privateKeyEnc, hashedPassword, iv);
 
-        //Reccuperar de byte[] a privatekey
-        PKCS8EncodedKeySpec especificación = new PKCS8EncodedKeySpec(privateKey); //Formatear la clave
-        KeyFactory fabricaClaves = KeyFactory.getInstance("RSA"); //Obtener el creador de claves
-        clavePrivadaActiva fabricaClaves.generatePrivate(especificación); //Recuperar la clave y guardar en la variable de clase
+        try
+        {
+            //Recuperar par de claves
+            KeyFactory fabricaClaves = KeyFactory.getInstance("RSA"); //Obtener el creador de claves
+
+            //Reccuperar de byte[] a privatekey
+            PKCS8EncodedKeySpec especPriv = new PKCS8EncodedKeySpec(privateKey); //Formatear la clave
+            clavePrivadaActiva = fabricaClaves.generatePrivate(especPriv); //Recuperar la clave y guardar en la variable de clase
+
+            //Reccuperar de byte[] a publickey
+            PKCS8EncodedKeySpec especPubl = new PKCS8EncodedKeySpec(publicKey); //Formatear la clave
+            clavePublicaActiva = fabricaClaves.generatePublic(especPubl); //Recuperar la clave y guardar en la variable de clase        
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }

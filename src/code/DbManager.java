@@ -22,62 +22,72 @@
 // ============================================================
 
 import java.io.*; // clases para leer y escribir archivos
+import java.util.ArrayList;
+
 
 public class DbManager
 {
     // Dónde está el archivo CSV
-    private String rutaCsv = "src/database/database.csv";
+    private static String rutaCsv = "src/database/database.csv";
 
     // Nombre del único usuario por ahora
     private String usuario = "u";
-
-    // Método de prueba original
-    public void HelloDbManager()
-    {
-        System.out.println("\n¡Hola, soy DbManager.\n");
-    }
 
     // --------------------------------------------------------
     // USUARIO
     // --------------------------------------------------------
 
-    // Guarda las claves RSA del usuario.
-    // Devuelve true si se ha guardado, false si ya había un usuario guardado.
-    public boolean guardarUsuario(String clavePublica, String clavePrivadaCifrada)
+    // Devuelve los datos del usuario, o null si no existe:
+    public static String[] ObtenerUsuario(String userName)
     {
-        if (obtenerUsuario() != null)
+        return Buscar("USUARIO", userName);
+    }
+
+    public static boolean GuardarUsuario(String[] dataline)
+    {
+        if (ObtenerUsuario(dataline[0]) != null)
         {
             return false; // ya existe, no lo guardamos otra vez
         }
-        escribirLinea("USUARIO;" + usuario + ";" + clavePublica + ";" + clavePrivadaCifrada + ";");
+        String toWrite = "USUARIO;";
+        for(int i = 0; i < dataline.length; i++)
+        {
+            toWrite += dataline[i];
+        }
+        EscribirLinea(toWrite);
         return true;
-    }
-
-    // Devuelve los datos del usuario, o null si no existe:
-    //   resultado[2] = clave pública
-    //   resultado[3] = clave privada cifrada
-    public String[] obtenerUsuario()
-    {
-        return buscar("USUARIO", null);
     }
 
     // --------------------------------------------------------
     // ARCHIVOS
     // --------------------------------------------------------
 
-    // Guarda un archivo cifrado y su clave AES
-    public void guardarArchivo(String nombreOriginal, String nombreCifrado, String claveAes)
+    // Busca un archivo por su nombre original. Devuelve null si no existe:
+    public static String[] ObtenerArchivo(String nombreOriginal)
     {
-        escribirLinea("ARCHIVO;" + usuario + ";" + nombreOriginal + ";" + nombreCifrado + ";" + claveAes);
+        return Buscar("ARCHIVO", nombreOriginal);
     }
 
-    // Busca un archivo por su nombre original. Devuelve null si no existe:
-    //   resultado[2] = nombre original
-    //   resultado[3] = nombre del archivo cifrado
-    //   resultado[4] = clave AES
-    public String[] obtenerArchivo(String nombreOriginal)
+    // Guarda un archivo cifrado y su clave AES
+    public static boolean GuardarArchivo(String[] dataline)
     {
-        return buscar("ARCHIVO", nombreOriginal);
+        if (ObtenerArchivo(dataline[3]) != null)
+        {
+            return false; // ya existe, no lo guardamos otra vez
+        }
+        String toWrite = "ARCHIVO;";
+        for(int i = 0; i < dataline.length; i++)
+        {
+            toWrite += dataline[i];
+        }
+        EscribirLinea(toWrite);
+        return true;
+    }
+
+    //Devuelve los nombres de todos los archivos de un usuario
+    public static String[] ObtenerArchivos(String userName)
+    {
+        return BuscarAll(userName);
     }
 
     // --------------------------------------------------------
@@ -86,7 +96,7 @@ public class DbManager
 
     // Añade una línea al final del CSV.
     // El "true" significa "añadir al final" (sin él se borraría todo el archivo).
-    private void escribirLinea(String linea)
+    private static void EscribirLinea(String linea)
     {
         try (FileWriter escritor = new FileWriter(rutaCsv, true))
         {
@@ -101,7 +111,7 @@ public class DbManager
     // Recorre el CSV línea a línea buscando una del tipo indicado.
     // Si nombreArchivo no es null, también tiene que coincidir el nombre del archivo.
     // Devuelve las columnas de la línea encontrada, o null si no hay ninguna.
-    private String[] buscar(String tipo, String nombreArchivo)
+    private static String[] Buscar(String tipo, String nombre)
     {
         try (BufferedReader lector = new BufferedReader(new FileReader(rutaCsv)))
         {
@@ -115,19 +125,66 @@ public class DbManager
                 String[] c = linea.split(";", -1);
 
                 // Si la línea está mal formada, la saltamos
-                if (c.length != 5)
+                if (c.length != 6)
                 {
                     continue;
                 }
 
+                //Por ahora no puede haber 2 archivos con el mismo nombre ni 2 usuarios con el mismo nombre
                 boolean mismoTipo = c[0].equals(tipo);
-                boolean mismoUsuario = c[1].equals(usuario);
-                boolean mismoArchivo = (nombreArchivo == null) || c[2].equals(nombreArchivo);
+                boolean mismoNombre = c[1].equals(nombre);
 
-                if (mismoTipo && mismoUsuario && mismoArchivo)
+                if (mismoTipo && mismoNombre)
                 {
-                    return c; // encontrada
+                    String[] result = new String[5];
+                    for(int i = 0; i < 5; i++)
+                    {
+                        result[i] = c[i+1];
+                    }
+                    return result; // encontrada
                 }
+            }
+        }
+        catch (IOException e)
+        {
+            System.out.println("Error al leer: " + e.getMessage());
+        }
+
+        return null; // no se ha encontrado nada
+    }
+
+    private static String[] BuscarAll(String userName)
+    {
+        try (BufferedReader lector = new BufferedReader(new FileReader(rutaCsv)))
+        {
+            String linea;
+            ArrayList<String> archivos = new ArrayList<>();
+
+            // Leemos línea a línea hasta que no queden (readLine devuelve null)
+            while ((linea = lector.readLine()) != null)
+            {
+                // Separamos la línea en columnas. El -1 hace que no se pierdan
+                // las columnas vacías del final.
+                String[] c = linea.split(";", -1);
+
+                // Si la línea está mal formada, la saltamos
+                if (c.length != 6)
+                {
+                    continue;
+                }
+
+                //Por ahora no puede haber 2 archivos con el mismo nombre ni 2 usuarios con el mismo nombre
+                boolean mismoTipo = c[0].equals("ARCHIVO");
+                boolean mismoUser = c[5].equals(userName);
+
+                if (mismoTipo && mismoUser)
+                {
+                    archivos.add(c[1]); // encontrada
+                }
+            }
+            if(archivos.size() < 0)
+            {
+                return archivos.toArray(String[]::new);
             }
         }
         catch (IOException e)
