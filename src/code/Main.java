@@ -153,7 +153,7 @@ public class Main
     //Funciones definitivas de cifrado y descifrado--------------------------------------------------------------------
 
     //Cifra el archivo y lo guarda en la db
-    public void CifrarArchivo(byte[] archivo, PublicKey publicKey, String nombreArchivo) //Recibe el archivo a cifrar y la clave publica del usuario que lo cifra
+    public static void CifrarArchivo(byte[] archivo, PublicKey publicKey, String nombreArchivo) //Recibe el archivo a cifrar y la clave publica del usuario que lo cifra
     {
         String[] dataline = new String[3];
         //CifradoAES
@@ -174,7 +174,7 @@ public class Main
         DbManager.GuardarArchivo(dataline);
     }
 
-    public byte[] DescifrarArcchivo(String nombreArchivo, PrivateKey privateKey)
+    public static byte[] DescifrarArcchivo(String nombreArchivo, PrivateKey privateKey)
     {
         String[] dataline = DbManager.ObtenerArchivo(nombreArchivo);
         //Recupera la informacion para descodificar
@@ -192,7 +192,7 @@ public class Main
     }
 
     //Gestion de user
-    public void Register(String userName, String password)
+    public static void Register(String userName, String password)
     {
         String dataline[] = new String[5];
 
@@ -215,7 +215,7 @@ public class Main
         DbManager.GuardarUsuario(dataline);
     }
 
-    public void Login(String userName, String password)
+    public static void Login(String userName, String password)
     {
         String dataline[] = DbManager.ObtenerUsuario(userName);//Esta variable se obtendra directamente de la base de datos utilizando userName.
         
