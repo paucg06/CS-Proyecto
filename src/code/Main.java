@@ -49,7 +49,6 @@ public class Main
         //Crea Instancia "DIREC_ARCHIVOS"
         Path ruta  = Paths.get(DIREC_ARCHIVOS);
 
-        
         try(Stream<Path> stream = Files.list(ruta))
         {
             // Obtenemos TODOS los Archivos del Directorio
@@ -151,6 +150,19 @@ public class Main
 
 
     //Funciones definitivas de cifrado y descifrado--------------------------------------------------------------------
+
+    //Estas dos son para usar las variables de clase (La interfaz llama a estas)
+    public static void GuardarMiArchivo(byte[] archivo, String nombre)
+    {
+        CifrarArchivo(archivo, clavePublicaActiva, nombre);
+    }
+
+    public static byte[] RecuperarMiArchivo(String nombre)
+    {
+        return DescifrarArcchivo(nombre, clavePrivadaActiva);
+    }
+
+    //A futuro se implementaran funciones que usen otra clave que no es la propia
 
     //Cifra el archivo y lo guarda en la db
     public static void CifrarArchivo(byte[] archivo, PublicKey publicKey, String nombreArchivo) //Recibe el archivo a cifrar y la clave publica del usuario que lo cifra
