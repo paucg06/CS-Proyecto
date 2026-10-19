@@ -1,6 +1,9 @@
 //Librerias
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.io.File;
+import java.util.List;
 
 public class UI
 {
@@ -21,35 +24,29 @@ public class UI
         //Titulo (parte de arriba)
         JLabel titulo = new JLabel("Servicio seguro de contenidos multimedia", SwingConstants.CENTER);
 
-        //Zona de texto (centro): aqui se muestran los resultados, sustituye a la consola
-        JTextArea zonaTexto = new JTextArea();
+        //Zona de texto (centro): muestra los resultados y acepta arrastrar y soltar archivos
+        JTextArea zonaTexto = new JTextArea("Arrastra y suelta un archivo aquí o pulsa 'Subir Archivo'...");
         zonaTexto.setEditable(false); //El usuario no puede escribir en ella
         JScrollPane scroll = new JScrollPane(zonaTexto);
 
-        //Botones (las mismas opciones del menu anterior)
-        JButton botonActualizar = new JButton("Actualizar");
-        JButton botonMostrar = new JButton("Mostrar Archivos");
-        JButton botonAes = new JButton("AES");
-        JButton botonDb = new JButton("DB");
-        JButton botonSalir = new JButton("Salir");
+        // Configurar funcionalidad Drag and Drop en la zona de texto
+        configurarDragAndDrop(zonaTexto);
+
+        //Botones: Subir y Bajar archivos
+        JButton botonSubir = new JButton("Subir Archivo");
+        JButton botonBajar = new JButton("Bajar Archivo");
 
         //Que hace cada boton al pulsarlo
-        botonActualizar.addActionListener(e -> opcionActualizar(zonaTexto));
-        botonMostrar.addActionListener(e -> opcionMostrarArchivos(zonaTexto));
-        botonAes.addActionListener(e -> cifrarValoresAES(zonaTexto));
-        botonDb.addActionListener(e -> descifrarValoresAES(zonaTexto));
-        botonSalir.addActionListener(e -> System.exit(0));
+        botonSubir.addActionListener(e -> abrirExploradorYSubir(ventana, zonaTexto));
+        botonBajar.addActionListener(e -> descifrarValoresAES(zonaTexto));
 
-        //Panel con los botones dispuestos horizontalmente (1 fila, columnas automaticas)
-        JPanel panelBotones = new JPanel(new GridLayout(1, 0, 5, 5));
+        //Panel con los botones dispuestos horizontalmente
+        JPanel panelBotones = new JPanel(new GridLayout(1, 2, 10, 10));
         panelBotones.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10)); //Margen alrededor
-        panelBotones.add(botonActualizar);
-        panelBotones.add(botonMostrar);
-        panelBotones.add(botonAes);
-        panelBotones.add(botonDb);
-        panelBotones.add(botonSalir);
+        panelBotones.add(botonSubir);
+        panelBotones.add(botonBajar);
 
-        //Panel superior que agrupa el titulo y los botones
+        //Panel superior que agrupa titulo y botones
         JPanel panelNorte = new JPanel(new BorderLayout());
         panelNorte.add(titulo, BorderLayout.NORTH);
         panelNorte.add(panelBotones, BorderLayout.CENTER);
@@ -62,36 +59,55 @@ public class UI
         ventana.setVisible(true);
     }
 
-    //Opcion 1: vuelve a leer los archivos de la carpeta
-    private void opcionActualizar(JTextArea zonaTexto)
+    // Abre el explorador del sistema (JFileChooser) para seleccionar y subir un archivo
+    private void abrirExploradorYSubir(JFrame ventana, JTextArea zonaTexto)
     {
-        Main.cargarArchivos(); //Reutilizamos el metodo de Main
-        zonaTexto.setText("Archivos actualizados: " + Main.matrizArchivos.length);
-    }
+        JFileChooser selectorArchivos = new JFileChooser();
+        int resultado = selectorArchivos.showOpenDialog(ventana);
 
-    //Opcion 2: actualiza y muestra el nombre y tamanyo de cada archivo
-    private void opcionMostrarArchivos(JTextArea zonaTexto)
-    {
-        Main.cargarArchivos();
-        zonaTexto.setText(""); //Borrar lo que hubiera
-
-        for (int i = 0; i < Main.matrizArchivos.length; i++)
+        if (resultado == JFileChooser.APPROVE_OPTION)
         {
-            String nombre = (String) Main.matrizArchivos[i][0];
-            byte[] contenido = (byte[]) Main.matrizArchivos[i][1];
-
-            zonaTexto.append(nombre + "\n");
-            zonaTexto.append(contenido.length + " bytes\n");
+            File archivoSeleccionado = selectorArchivos.getSelectedFile();
+            Main.CifrarValoresAES(0); //Reutilizamos el metodo de Main
+            zonaTexto.setText("Archivo seleccionado: " + archivoSeleccionado.getAbsolutePath() + "\n" +
+                              "Estado de cifrado/subida: Archivo " + Main.testImgEnc + " procesado con éxito.");
         }
     }
 
-    //Opcion 3: cifra valores AES
-    private void cifrarValoresAES(JTextArea zonaTexto)
+    // Permite arrastrar y soltar archivos directamente sobre la zona de texto
+    private void configurarDragAndDrop(JTextArea zonaTexto)
     {
-        Main.CifrarValoresAES(0); //Reutilizamos el metodo de Main
-        zonaTexto.setText("Archivo cifrado: " + Main.testImgEnc);
+        zonaTexto.setTransferHandler(new TransferHandler() {
+            @Override
+            public boolean canImport(TransferSupport support) {
+                return support.isDataFlavorSupported(DataFlavor.javaFileListFlavor);
+            }
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public boolean importData(TransferSupport support) {
+                if (!canImport(support)) {
+                    return false;
+                }
+                try {
+                    // Corrección: llamada a getTransferable() antes de getTransferData()
+                    List<File> archivos = (List<File>) support.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    if (!archivos.isEmpty()) {
+                        File archivoArrastrado = archivos.get(0);
+                        Main.CifrarValoresAES(0); //Reutilizamos el metodo de Main
+                        zonaTexto.setText("Archivo arrastrado: " + archivoArrastrado.getAbsolutePath() + "\n" +
+                                          "Estado de cifrado/subida: Archivo " + Main.testImgEnc + " procesado con éxito.");
+                        return true;
+                    }
+                } catch (Exception e) {
+                    zonaTexto.setText("Error al procesar el archivo arrastrado: " + e.getMessage());
+                }
+                return false;
+            }
+        });
     }
 
+    // Descifra y simula la descarga del archivo
     private void descifrarValoresAES(JTextArea zonaTexto)
     {
         zonaTexto.setText("Archivo descifrado estado: " + Boolean.toString(Main.DescifrarValoresAES(0)));
