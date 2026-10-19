@@ -40,20 +40,24 @@ public class UI
         botonDb.addActionListener(e -> descifrarValoresAES(zonaTexto));
         botonSalir.addActionListener(e -> System.exit(0));
 
-        //Panel con los botones uno debajo de otro (izquierda)
-        JPanel panelBotones = new JPanel(new GridLayout(0, 1, 5, 5)); //Cualquier numero de filas, 1 columna
-        panelBotones.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); //Margen alrededor
+        //Panel con los botones dispuestos horizontalmente (1 fila, columnas automaticas)
+        JPanel panelBotones = new JPanel(new GridLayout(1, 0, 5, 5));
+        panelBotones.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10)); //Margen alrededor
         panelBotones.add(botonActualizar);
         panelBotones.add(botonMostrar);
         panelBotones.add(botonAes);
         panelBotones.add(botonDb);
         panelBotones.add(botonSalir);
 
+        //Panel superior que agrupa el titulo y los botones
+        JPanel panelNorte = new JPanel(new BorderLayout());
+        panelNorte.add(titulo, BorderLayout.NORTH);
+        panelNorte.add(panelBotones, BorderLayout.CENTER);
+
         //Colocar todo en la ventana
         ventana.setLayout(new BorderLayout());
-        ventana.add(titulo, BorderLayout.NORTH);
-        ventana.add(panelBotones, BorderLayout.WEST);
-        ventana.add(scroll, BorderLayout.CENTER);
+        ventana.add(panelNorte, BorderLayout.NORTH); // Titulo y botones arriba
+        ventana.add(scroll, BorderLayout.CENTER);     // Zona de texto en el centro
 
         ventana.setVisible(true);
     }
