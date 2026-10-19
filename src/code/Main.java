@@ -32,6 +32,8 @@ public class Main
     static byte[] testKey;
     static byte[] testIv;
     public static byte[] testImgEnc;
+
+    private static String[] user = new String[5];
     //-----------------------------------
 
     public static void main(String[] args)
@@ -204,20 +206,29 @@ public class Main
         dataline[3] = Base64.getEncoder().encodeToString(salt); //salt para cifrado en claro
         dataline[4] = Base64.getEncoder().encodeToString(iv); //iv para cifrado en claro
         //Dataline es la informacion que se guarda en la db
+
+        user = dataline;
     }
 
     public void Login(String userName, String password)
     {
-        /* //Reccuperar de byte[] a privatekey
-        // 1. Envolvemos los bytes en una especificación compatible con el estándar PKCS#8
-        PKCS8EncodedKeySpec especificación = new PKCS8EncodedKeySpec(bytesClavePrivada);
+        String dataline[] = user;//Esta variable se obtendra directamente de la base de datos utilizando userName.
         
-        // 2. Creamos una fábrica de claves configurada para el algoritmo RSA
-        KeyFactory fabricaClaves = KeyFactory.getInstance("RSA");
+        //Recuperar datos de la db
+        clavePublicaActiva = Base64.getDecoder().decode(dataline[1]); //Guardar en la variable de clase
+        byte[] privateKeyEnc = Base64.getDecoder().decode(dataline[2]); //Clave privada que descifrar
+        byte[] salt = Base64.getDecoder().decode(dataline[3]); //Salt para hashear la contrasenya
+        byte[] iv = Base64.getDecoder().decode(dataline[4]); //IV para decofificar la clave privada
         
-        // 3. La fábrica lee los bytes estructurados y nos devuelve el objeto PrivateKey listo para usar
-        return fabricaClaves.generatePrivate(especificación);
-        */
-    }
+        //Codificar contrasenya
+        byte[] hashedPassword = PasswordManager.CodePass(password, salt);
 
+        //Descifrar la clave privaeda
+        byte[] privateKey = AES.Decode(privateKeyEnc, hashedPassword, iv);
+
+        //Reccuperar de byte[] a privatekey
+        PKCS8EncodedKeySpec especificación = new PKCS8EncodedKeySpec(privateKey); //Formatear la clave
+        KeyFactory fabricaClaves = KeyFactory.getInstance("RSA"); //Obtener el creador de claves
+        clavePrivadaActiva fabricaClaves.generatePrivate(especificación); //Recuperar la clave y guardar en la variable de clase
+    }
 }
