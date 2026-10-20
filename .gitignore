@@ -3,3 +3,7 @@
 
 #Config del visual studio
 .vsconfig
+
+#Archivos descifrados (contenido en claro, no deben subirse al repositorio)
+descifrados/
+cifrados/

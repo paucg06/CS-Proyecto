@@ -8,7 +8,7 @@ import java.security.PublicKey;
 
 public class RSA {
 
-    private static final String TRANSFORMACION = "RSA/ECB/PKCS1Padding"; 
+    private static final String TRANSFORMACION = "RSA/ECB/PKCS1Padding";
 
     //genera y devuelve el par de claves RSA
     public static KeyPair GenerarParDeClaves() {
@@ -21,7 +21,7 @@ public class RSA {
         }
     }
 
-    //recibe las claves aes y las cifra 
+    //recibe las claves aes y las cifra
     public static byte[] Encode(byte[] claveAES, PublicKey clavePublica) {
         try {
             Cipher rsaCipher = Cipher.getInstance(TRANSFORMACION);
@@ -35,11 +35,11 @@ public class RSA {
     public static byte[] Decode(byte[] claveAES, PrivateKey clavePrivada)
     {
         try{
-            Cipher rsaCipher = Cipher.getInstance(TRANSFORMACION); 
-            rsaCipher.init(Cipher.DECRYPT_MODE, clavePrivada); 
-            return rsaCipher.doFinal(claveAES); 
+            Cipher rsaCipher = Cipher.getInstance(TRANSFORMACION);
+            rsaCipher.init(Cipher.DECRYPT_MODE, clavePrivada);
+            return rsaCipher.doFinal(claveAES);
         } catch(Exception e){
-            throw new RuntimeException("Error al descifrar l clave AES con RSA", e); 
+            throw new RuntimeException("Error al descifrar l clave AES con RSA", e);
         }
     }
 }
