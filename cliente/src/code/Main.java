@@ -31,16 +31,6 @@ public class Main
     private static PublicKey clavePublicaActiva;
     private static String usuarioActivo;
 
-
-    //Variables temporales de depuracion
-    //-----------------------------------
-    static byte[] testKey;
-    static byte[] testIv;
-    public static byte[] testImgEnc;
-
-    private static String[] user = new String[5];
-    //-----------------------------------
-
     public static void main(String[] args)
     {
         UI ui = new UI();
@@ -91,67 +81,6 @@ public class Main
             System.out.println(contenido.length + " bytes");
         }
     }
-
-    //Funciones test-----------------------------------------------------------------------------------------------
-
-    public static void CifrarValoresAES(int archivo)
-    {
-        // Cargar los archivos en matrizArchivos
-        cargarArchivos();
-
-        // Comprobar que existe al menos un archivo
-        if (matrizArchivos.length <= archivo)
-        {
-            System.out.println("No hay archivos para cifrar.");
-            return;
-        }
-
-        // Obtener la imagen del primer archivo
-        byte[] imagen = (byte[]) matrizArchivos[archivo][1];
-
-        // Generar clave AES de 16 bytes
-        byte[] keyAES = RandKeyGenerator.GenKey(16);
-
-        // Generar IV de 12 bytes
-        byte[] iv = RandKeyGenerator.GenKey(12);
-
-        // Cifrar la imagen
-        byte[] imagenCifrada = AES.Encode(imagen, keyAES, iv);
-
-        //PARTE RSA (tengo que probabrlo ns si esta bien :D)
-        java.security.KeyPair parClavesUsuario = RSA.GenerarParDeClaves();
-
-        byte[] claveAesCifrada = RSA.Encode(keyAES, parClavesUsuario.getPublic());
-
-        System.out.println("La clave AES se ha cifrado con RSA. Tamaño: " + claveAesCifrada.length + " bytes.");
-
-        //Pruebas para depuracion
-        testKey = keyAES;
-        testIv = iv;
-        testImgEnc = imagenCifrada;
-    }
-
-    public static boolean DescifrarValoresAES(int archivo)
-    {
-        // Cargar los archivos en matrizArchivos
-        cargarArchivos();
-
-        // Comprobar que existe al menos un archivo
-        if (matrizArchivos.length <= archivo)
-        {
-            System.out.println("No hay archivos para cifrar.");
-            return false;
-        }
-
-        // Obtener la imagen del primer archivo
-        byte[] imagen = (byte[]) matrizArchivos[archivo][1];
-
-        // Cifrar la imagen
-        byte[] imagenDescifrada = AES.Decode(testImgEnc, testKey, testIv);
-
-        return Arrays.equals(imagen, imagenDescifrada);
-    }
-
 
     //Funciones definitivas de cifrado y descifrado--------------------------------------------------------------------
 
