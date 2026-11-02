@@ -2,7 +2,7 @@
 title CS PROYECTO
 
 echo Compilando...
-javac src\code\*.java src\code\cypher\*.java
+javac cliente\src\code\*.java cliente\src\code\cypher\*.java
 
 if errorlevel 1 (
     echo.
@@ -15,4 +15,4 @@ echo.
 echo Ejecutando programa...
 echo.
 
-start "" javaw -cp src\code Main
+start "" javaw -cp cliente\src\code Main

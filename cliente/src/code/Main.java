@@ -22,8 +22,8 @@ import java.security.spec.X509EncodedKeySpec;
 public class Main
 {
     public static String DIREC_ARCHIVOS = "src/img"; //seleccionar src y img (¡¡Debe ser modificado si se modifica la estructura de carpetas o se mueve el .bat!!)
-    public static String DIREC_DESCIFRADOS = "descifrados"; //Carpeta (junto al .bat) donde se guardan los archivos recuperados
-    public static String DIREC_CIFRADOS = "cifrados"; //Carpeta (junto al .bat) donde se guardan los archivos cifrados (.enc)
+    public static String DIREC_DESCIFRADOS = "cliente/storage"; //Carpeta (junto al .bat) donde se guardan los archivos recuperados
+    public static String DIREC_CIFRADOS = "servidor/storage"; //Carpeta (junto al .bat) donde se guardan los archivos cifrados (.enc)
     public static final String USUARIO_UNICO = "u"; //Fase I: un unico usuario
     public static Object[][] matrizArchivos = new Object[0][2];;
 

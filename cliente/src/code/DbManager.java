@@ -25,7 +25,7 @@ import java.util.ArrayList;
 public class DbManager
 {
     // Dónde está el archivo CSV
-    private static String rutaCsv = "src/database/database.csv";
+    private static String rutaCsv = "servidor/database/database.csv"; //Esta ruta inicio donde se ejecuta la aplicacion (Si se hace desde el bat es desde CS-Proyecto)
 
     // --------------------------------------------------------
     // USUARIO
