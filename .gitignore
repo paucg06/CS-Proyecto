@@ -6,3 +6,6 @@
 
 #Archivos cifrados y descifrados (contenido en claro, no deben subirse al repositorio)
 storage/
+
+#Envoiroment de produccion, no subir al repo las contrasenyas reales
+.env
