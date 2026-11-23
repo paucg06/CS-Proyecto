@@ -2,14 +2,14 @@ package ui;
 import javax.swing.*;
 import java.awt.*;
 
-public class RegistroView extends JPanel {
+public class RegisterView extends JPanel {
     private JTextField campoUsuario;
     private JPasswordField campoContrasena;
     private JPasswordField campoRepetirContrasena;
     private JButton botonCrearCuenta = new JButton("Crear cuenta");
     private JButton botonIrAlInicio = new JButton("¿Ya estás registrado? Inicia sesión");
 
-    public RegistroView(Runnable alIrAlInicio) {
+    public RegisterView(Runnable alIrAlInicio) {
         setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(5, 5, 5, 5); // Margen alrededor de cada componente

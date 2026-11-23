@@ -15,7 +15,7 @@ public class Prueba {
                 () -> cartas.show(contenedor, "MAIN")
         ), "LOGIN");
 
-        contenedor.add(new RegistroView(
+        contenedor.add(new RegisterView(
                 () -> cartas.show(contenedor, "LOGIN")
         ), "REGISTRO");
 
