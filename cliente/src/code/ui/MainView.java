@@ -1,42 +1,100 @@
 package ui;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
+
+import ui.components.Sidebar;
+import ui.components.Topbar;
 
 public class MainView extends JPanel {
 
+    private CardLayout cartas;
+    private JPanel contenido;
+
+    private Topbar barraSuperior;
+
+    private final Color FONDO = new Color(248, 249, 250);
+
     public MainView(Runnable alCerrarSesion) {
+
         setLayout(new BorderLayout());
+        setBackground(FONDO);
 
-        // --- Contenido central (varias secciones) ---
-        CardLayout cartas = new CardLayout();
-        JPanel contenido = new JPanel(cartas);
-        contenido.add(new JLabel("Aquí irán Mis Archivos"), "MIS_ARCHIVOS");
-        contenido.add(new JLabel("Aquí irá Compartido conmigo"), "COMPARTIDO");
-        contenido.add(new JLabel("Aquí irá la Papelera"), "PAPELERA");
+        // BARRA SUPERIOR
+        barraSuperior = new Topbar();
 
-        // --- Menú lateral ---
-        JPanel menu = new JPanel();
-        menu.setLayout(new BoxLayout(menu, BoxLayout.Y_AXIS));
-        menu.setPreferredSize(new Dimension(180, 0));
+        add(barraSuperior, BorderLayout.NORTH);
 
-        JButton botonMisArchivos = new JButton("Mis Archivos");
-        JButton botonCompartido = new JButton("Compartido conmigo");
-        JButton botonPapelera = new JButton("Papelera");
-        JButton botonCerrarSesion = new JButton("Cerrar sesión");
+        // MENÚ LATERAL
+        Sidebar menu = new Sidebar(
+                this::cambiarSeccion,
+                alCerrarSesion
+        );
 
-        botonMisArchivos.addActionListener(e -> cartas.show(contenido, "MIS_ARCHIVOS"));
-        botonCompartido.addActionListener(e -> cartas.show(contenido, "COMPARTIDO"));
-        botonPapelera.addActionListener(e -> cartas.show(contenido, "PAPELERA"));
-        botonCerrarSesion.addActionListener(e -> alCerrarSesion.run());
-
-        menu.add(botonMisArchivos);
-        menu.add(botonCompartido);
-        menu.add(botonPapelera);
-        menu.add(botonCerrarSesion);
-
-        // --- Colocar todo en este panel ---
         add(menu, BorderLayout.WEST);
+
+        // CONTENIDO CENTRAL
+        cartas = new CardLayout();
+
+        contenido = new JPanel(cartas);
+        contenido.setBackground(FONDO);
+
+        contenido.add(
+                crearPanelTemporal("Mis archivos"),
+                "MIS_ARCHIVOS"
+        );
+
+        contenido.add(
+                crearPanelTemporal("Compartido conmigo"),
+                "COMPARTIDO"
+        );
+
+        contenido.add(
+                crearPanelTemporal("Papelera"),
+                "PAPELERA"
+        );
+
         add(contenido, BorderLayout.CENTER);
+
+        // SECCIÓN INICIAL
+        cambiarSeccion("MIS_ARCHIVOS");
+    }
+
+    private void cambiarSeccion(String seccion) {
+
+        cartas.show(contenido, seccion);
+
+        switch (seccion) {
+
+            case "MIS_ARCHIVOS":
+                barraSuperior.cambiarTitulo("Mis archivos");
+                break;
+
+            case "COMPARTIDO":
+                barraSuperior.cambiarTitulo("Compartido conmigo");
+                break;
+
+            case "PAPELERA":
+                barraSuperior.cambiarTitulo("Papelera");
+                break;
+        }
+    }
+
+    private JPanel crearPanelTemporal(String titulo) {
+
+        JPanel panel = new JPanel(new BorderLayout());
+
+        panel.setBackground(FONDO);
+        panel.setBorder(new EmptyBorder(30, 35, 30, 35));
+
+        JLabel mensaje = new JLabel(titulo);
+
+        mensaje.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        mensaje.setForeground(new Color(95, 99, 104));
+
+        panel.add(mensaje, BorderLayout.NORTH);
+
+        return panel;
     }
 }

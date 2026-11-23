@@ -1,10 +1,11 @@
 package ui;
 
-import java.awt.CardLayout;
 import javax.swing.*;
+import java.awt.*;
 
 public class Prueba {
     public static void main(String[] args) {
+
         JFrame ventana = new JFrame("Prueba");
 
         CardLayout cartas = new CardLayout();
