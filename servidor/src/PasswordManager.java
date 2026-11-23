@@ -1,7 +1,6 @@
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 import java.util.Base64;
 
 public class PasswordManager
@@ -33,7 +32,7 @@ public class PasswordManager
     //Lee {salt, hash} del usuario solicitado. null si no existe o no tiene credenciales
     private static byte[][] GetUserData(String user)
     {
-        try
+        /*try
         {
             String[] datos = ServerDb.obtenerAuth(user);
             if (datos == null)
@@ -44,7 +43,8 @@ public class PasswordManager
         } catch (SQLException e)
         {
             throw new IllegalStateException("No se pudo leer el usuario de la base de datos.", e);
-        }
+        }*/
+       return null;
     }
 
     private static synchronized byte[] GetPepper()//Lee la pimienta del entorno usando la clase EnvConfig
