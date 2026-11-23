@@ -14,7 +14,7 @@ public class JWTCreator {
 
     //Funcion base de acceso a esta clase.
     //Recibe por parametro un string con el id del usuario y otro con su rol (USR para los usuarios normales, por ahora no hay mas roles)
-    public static String generateHs256Token(String subject, String role) throws Exception
+    public static String GenerateHs256Token(String subject, String role) throws Exception
     {
         String headerJson = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
 
@@ -24,20 +24,20 @@ public class JWTCreator {
 
         String payloadJson = String.format(
                 "{\"iss\":\"cliente-java-local\",\"sub\":\"%s\",\"iat\":%d,\"exp\":%d,\"jti\":\"%s\",\"role\":\"%s\"}",
-                escapeJson(subject), now, exp, jti, escapeJson(role)
+                EscapeJson(subject), now, exp, jti, EscapeJson(role)
         );
 
         String encodedHeader = BASE64_URL.encodeToString(headerJson.getBytes(StandardCharsets.UTF_8));
         String encodedPayload = BASE64_URL.encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
 
         String signingInput = encodedHeader + "." + encodedPayload;
-        byte[] signatureBytes = signHmacSha256(signingInput, GetSECURITY());
+        byte[] signatureBytes = SignHmacSha256(signingInput, GetSECURITY());
         String encodedSignature = BASE64_URL.encodeToString(signatureBytes);
 
         return signingInput + "." + encodedSignature;
     }
 
-    private static byte[] signHmacSha256(String data, byte[] key) throws Exception //Firma el contenido con HmacSha256
+    private static byte[] SignHmacSha256(String data, byte[] key) throws Exception //Firma el contenido con HmacSha256
     {
         Mac mac = Mac.getInstance("HmacSHA256");
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, "HmacSHA256");
@@ -45,7 +45,7 @@ public class JWTCreator {
         return mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
     }
 
-    private static String escapeJson(String value) //Formatea el texto para adecuarlo a json
+    private static String EscapeJson(String value) //Formatea el texto para adecuarlo a json
     {
         if (value == null) return "";
         return value
@@ -60,8 +60,18 @@ public class JWTCreator {
     {
         if (SECRET == null)
         {
-            String key = "JWT_SECURITY_KEY";
-            SECRET = Base64.getDecoder().decode(EnvConfig.get(key));
+            String keyName = "JWT_SECURITY_KEY";
+            String encodedKey = EnvConfig.get(keyName);
+            if (encodedKey == null || encodedKey.isBlank())
+            {
+                throw new IllegalStateException("Falta o está vacía la variable de configuración: " + keyName);
+            }
+            byte[] decoded = Base64.getDecoder().decode(encodedKey);
+            if (decoded.length < 32)
+            {
+                throw new IllegalStateException("JWT_SECURITY_KEY debe tener al menos 32 bytes decodificados");
+            }
+            SECRET = decoded;
         }
         return SECRET;
     }
