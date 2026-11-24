@@ -77,7 +77,8 @@ public class PasswordManager
         if (userData == null)
         {
             //Usuario inexistente: se hace el mismo calculo para no delatarlo por el tiempo de respuesta
-            CodePass(password, new byte[32], GetPepper());
+            byte fake[] = CodePass(password, new byte[32], GetPepper());
+            MessageDigest.isEqual(fake, fake);
             return false;
         }
         byte[] toCheck = CodePass(password, userData[0], GetPepper());
