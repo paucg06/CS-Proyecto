@@ -1,0 +1,25 @@
+CREATE TABLE USUARIO (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Username TEXT NOT NULL UNIQUE,
+    Password TEXT NOT NULL,
+    Public_Key TEXT,
+    Private_Key TEXT,
+    Salt_de_Login TEXT
+);
+
+CREATE TABLE ARCHIVO (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Usuario TEXT NOT NULL,
+    Nombre TEXT,
+    AES_key TEXT,
+    Ruta_Archivo TEXT,
+    FOREIGN KEY (Usuario) REFERENCES USUARIO(Username)
+);
+
+CREATE TABLE TOKEN (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Usuario TEXT NOT NULL,
+    Token TEXT,
+    Caducidad TEXT,
+    FOREIGN KEY (Usuario) REFERENCES USUARIO(Username)
+);
